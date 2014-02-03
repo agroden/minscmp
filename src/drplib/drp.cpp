@@ -1,47 +1,56 @@
 #include <math>
 #include "drp.h"
 
-drp_record(size_t num_neighbors, const xyt_struct* xyt) {
+using namespace drp;
+
+const drp_t* convert_xyt(size_t num_neighbors, const xyt_struct* xyt) {
 	for (size_t i = 0; i < xyt->nrows; ++i) {
-		// create new group
-		drp_group_t* curr_group = new drp_group_t();
+		drp_record_t* curr = new drp_record_t(i, xyt->thetacol[i]);
+		// look for nearest neighbors
 		for (size_t j = 0; j < xyt->nrows; ++i) {
-			// compute distance
 			if (j == i)
 				continue;
-			float d = sqrt(pow((xyt->xcol[j] - xyt->xcol[i]), 2) + 
-				pow((xyt->ycol[j] - xyt->ycol[i]), 2));
-			
-			if (curr_group.size() < num_neighbors)
-				curr_group.push_back(new drp_row(j, d));
+			float d = distance(j, i, xyt);
+			// first pass, don't calculate the tough stuff yet
+			if (curr->neighbors.size() < num_neighbors)
+				curr->neighbors.push_back(new drp_row(j, d));
 			else {
-				for (size_t k = 0; k < num_neighbors; ++k) {
-					if (curr_group.at(k) > d) {
-						
+				for (auto k = curr_group.begin(); k != curr_group.end(); ++k) {
+					if (k->distance > d) {
+						curr->neighbors.erase(k);
+						curr->neighbors.push_back(new drp_row(j, d));
+						delete k;
+						break;
 					}
 				}
 			}
 		}
-		m_groups.push_back(new drp_record_t(i, curr_group, xyt->thetacol[i]));
+		// calculate the rest of the info for the local group
+		for (auto n = curr->neighbors.begin(); n != curr->neighbors.end(); ++n) {
+			n->radial_angle = radial_angle(n->minutiae_id, i, xyt);
+			n->positional_angle = positional_angle(n->minutiae_id, i, xyt);
+		}
+		m_groups.push_back(curr);
 	}
 }
 
-static drp_record* from_file(const std::string path, size_t num_neighbors = 6)
-{
-	
+const drp_t* drp::from_file(size_t num_neighbors, const char* path) {
+	xyt_struct xyt;
+	// TODO: fix this biz
+	//bz_load(path, &xyt);
+	return convert_xyt(num_neighbors, &xyt);
 }
 
-~drp_record()
-{
-	// delete every record and then every group
+static float drp::distance(size_t n_id, size_t m_id, xyt_struct* xyt) {
+	return sqrt(pow((xyt->xcol[n_id] - xyt->xcol[m_id]), 2) + 
+				pow((xyt->ycol[n_id] - xyt->ycol[m_id]), 2));
 }
 
-size_t size() const
-{
-	return m_groups.size();
+static float drp::radial_angle(size_t n_id, size_t m_id, xyt_struct* xyt) {
+	return xyt->thetacol[n->minutiae_id] - xyt->thetacol[i];
 }
 
-drp_group_t* get_minutia_group(size_t idx) const
-{
-	return m_groups.at(idx);
+static float drp::positional_angle(size_t n_id, size_t m_id, xyt_struct* xyt) {
+	return atan((xyt->ycol[n_id] - xyt->ycol[m_id]) / 
+				(xyt->xcol[n_id] - xyt->xcol[m_id])) - xyt->thetacol[i];
 }

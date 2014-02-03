@@ -9,6 +9,7 @@
 #define __DRP_H__
 
 #include <deque>
+#include <memory>
 #include <string>
 #include "bozorth.h"
 
@@ -23,28 +24,25 @@ namespace drp {
 			positional_angle(pa) { }
 	} drp_row_t;
 
-	typedef std::deque<drp_row_t*> drp_group_t;
-	
+	typedef std::deque<std::unique_ptr<drp_row_t>> drp_group_t;
+
 	typedef struct drp_record {
 		size_t minutiae_id;
-		drp_group_t* neighbors;
+		drp_group_t neighbors;
 		float ridge_direction;
-		drp_record_t(size_t id, drp_group_t* grp, float rd) : 
+		drp_record(size_t id, float rd) : 
 			minutiae_id(id), neighbors(grp), ridge_direction(rd) { }
+		~drp_record() { neighbors.clear(); }
 	} drp_record_t;
 
-	class drp {
-	public:
-		drp(size_t num_neighbors = 6, const xyt_struct* xyt);
-		static drp* from_file(const std::string path, size_t num_neighbors = 6);
-		~drp();
+	typedef std::deque<std::unique_ptr<drp_record_t>> drp_t;
 
-		size_t size() const;
-		drp_record_t* get_minutiae_group(size_t idx) const;
+	const drp_t* convert_xyt(size_t num_neighbors = 6, const xyt_struct* xyt);
+	const drp_t* load(size_t num_neighbors = 6, const char* path);
 
-	private:
-		std::deque<drp_record_t*> m_groups;
-	};
+	static float distance(size_t n_id, size_t m_id, xyt_struct* xyt);
+	static float radial_angle(size_t n_id, size_t m_id, xyt_struct* xyt);
+	static float positional_angle(size_t n_id, size_t m_id, xyt_struct* xyt);
 }
 
 #endif
