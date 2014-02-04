@@ -1,0 +1,35 @@
+# make file for the minsec
+PRJ=drptool
+OUT_DIR=../../bin
+SRC=$(wildcard *.cpp)
+OBJ=$(SRC:.cpp=.o)
+LIB=-ldrp -lbozorth3
+INC=-I/opt/NBIS/include -I../../include
+UNITTEST=
+LD=g++
+LIB_DIR=../../lib
+NBIS_LIB=/opt/NBIS/lib
+CXXFLAGS=-Wall -std=c++11
+LDFLAGS=-Wl,-rpath=$(LIB_DIR) -L$(LIB_DIR) -L$(NBIS_LIB)
+
+all: $(OUT_DIR)/$(PRJ)
+
+debug: CXXFLAGS += -g3 -DDEBUG
+debug: all
+ifdef
+	@if [ -d $(UNITTEST) ]; then cd unittest; make debug; fi
+endif
+
+$(OUT_DIR)/$(PRJ): $(OBJ)
+	@mkdir -p $(OUT_DIR)
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIB)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $<
+
+clean:
+	$(RM) -rf $(OBJ)
+	$(RM) -rf $(OUT_DIR)
+ifdef UNITTEST
+	@if [ -d $(UNITTEST) ]; then cd unittest; make clean; fi
+endif
