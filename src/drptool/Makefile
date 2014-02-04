@@ -3,8 +3,8 @@ PRJ=drptool
 OUT_DIR=../../bin
 SRC=$(wildcard *.cpp)
 OBJ=$(SRC:.cpp=.o)
-LIB=-ldrp -lbozorth3
-INC=-I/opt/NBIS/include -I../../include
+LIB=-ldrp
+INC=-I../../include
 UNITTEST=
 LD=g++
 LIB_DIR=../../lib
@@ -29,7 +29,7 @@ $(OUT_DIR)/$(PRJ): $(OBJ)
 
 clean:
 	$(RM) -rf $(OBJ)
-	$(RM) -rf $(OUT_DIR)
+	$(RM) -rf $(OUT_DIR)/$(PRJ)
 ifdef UNITTEST
 	@if [ -d $(UNITTEST) ]; then cd unittest; make clean; fi
 endif
