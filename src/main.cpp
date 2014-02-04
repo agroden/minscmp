@@ -15,9 +15,8 @@ void run() {
 }
 
 void print_usage() {
-	std::cout << "minscmp <template file>.xyt <gallery file>.xyt" << std::endl;
-	std::cout << "minscmp -p <template file>.xyt <gallery files *>.xyt" << 
-		std::endl;
+	std::cout << "minscmp <template file>.xyt <gallery file>.xyt\n";
+	std::cout << "minscmp -p <template file>.xyt <gallery files *>.xyt\n";
 }
 
 int main(int argc, const char* argv[]) {
