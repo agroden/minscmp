@@ -6,11 +6,11 @@ OUT_INC=drp.h
 SRC=$(wildcard *.cpp)
 OBJ=$(SRC:.cpp=.o)
 LIB=-lxyt
-INC=-I/opt/NBIS/include
+INC=-I../../include
 UNITTEST=
 LD=g++
 CXXFLAGS=-Wall -std=c++11 -fPIC
-LDFLAGS=-shared
+LDFLAGS=-shared -L../../lib
 EXT=@mkdir -p $(OUT_INC); mv drp.h $(OUT_INC)
 
 all: $(OUT_DIR)/$(PRJ)
@@ -21,7 +21,7 @@ ifdef
 	@if [ -d $(UNITTEST) ]; then cd unittest; make debug; fi
 endif
 
-$(OUT_DIR)/$(PRJ): $(OBJ) $(OUT_DIR)/bozorth3.so
+$(OUT_DIR)/$(PRJ): $(OBJ)
 	@mkdir -p $(OUT_DIR)
 	$(LD) $(LDFLAGS) $(OBJ) -o $@ $(LIB)
 	@mkdir -p $(OUT_INC_DIR)
@@ -32,7 +32,7 @@ $(OUT_DIR)/$(PRJ): $(OBJ) $(OUT_DIR)/bozorth3.so
 
 clean:
 	$(RM) -rf $(OBJ)
-	$(RM) -rf $(OUT_DIR)
+	$(RM) -rf $(OUT_DIR)/$(PRJ)
 ifdef UNITTEST
 	@if [ -d $(UNITTEST) ]; then cd unittest; make clean; fi
 endif

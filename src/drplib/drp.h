@@ -11,6 +11,7 @@
 #include <deque>
 #include <memory>
 #include <string>
+#include "xyt.h"
 
 namespace drp {
 	class minutiae {
@@ -57,7 +58,7 @@ namespace drp {
 	typedef std::unique_ptr<drp_record> drp_record_ptr;
 	typedef std::deque<drp_record_ptr> drp_t;
 
-	const drp_t* convert_xyt(const xyt_t* xyt, size_t num_neighbors = 6);
+	const drp_t* convert_xyt(const xyt::xyt_t* xyt, size_t num_neighbors = 6);
 	const drp_t* load_xyt(const char* path, size_t num_neighbors = 6);
 
 	// file format:

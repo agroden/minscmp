@@ -9,26 +9,30 @@
 #include <fstream>
 #include "drp.h"
 
+using namespace xyt;
+
 namespace drp {
 	// forward declare file only convenience functions
-	static float distance(size_t n_id, size_t m_id, const xyt_struct* xyt);
-	static float radial_angle(size_t n_id, size_t m_id, const xyt_struct* xyt);
-	static float positional_angle(size_t n_id, size_t m_id, const xyt_struct* xyt);
-	
-	const drp_t* convert_xyt(const xyt_struct* xyt, size_t num_neighbors) {
+	static float distance(xyt_row* n, xyt_row* m);
+	static float radial_angle(xyt_row* n, xyt_row* m);
+	static float positional_angle(xyt_row* n, xyt_row* m);
+
+
+	const drp_t* convert_xyt(const xyt_t* xyt, size_t num_neighbors) {
 		drp_t* drp = new drp_t();
-		for (int i = 0; i < xyt->nrows; ++i) {
-			drp_record* curr = new drp_record(i, xyt->thetacol[i]);
+		for (size_t i = 0; i < xyt->size(); ++i) {
+			drp_record* curr = new drp_record(i, xyt->at(i)->theta());
 			drp_group_t* group = curr->neighbors();
 			// look for nearest neighbors
-			for (int j = 0; j < xyt->nrows; ++i) {
+			for (size_t j = 0; j < xyt->size(); ++j) {
 				if (j == i)
 					continue;
-				float d = distance(j, i, xyt);
+				float d = distance(xyt->at(j).get(), xyt->at(i).get());
 				// first pass, don't calculate the tough stuff yet
 				if (group->size() < num_neighbors)
 					group->push_back(drp_row_ptr(new drp_row(j, d)));
 				else {
+					// look for rows to replace
 					for (auto k = group->begin(); k != group->end(); ++k) {
 						if ((*k)->distance() > d) {
 							group->erase(k);
@@ -40,8 +44,12 @@ namespace drp {
 			}
 			// calculate the rest of the info for the local group
 			for (auto n = group->begin(); n != group->end(); ++n) {
-				(*n)->radial_angle(radial_angle((*n)->id(), i, xyt));
-				(*n)->positional_angle(positional_angle((*n)->id(), i, xyt));
+				(*n)->radial_angle(radial_angle(
+					xyt->at((*n)->id()).get(), 
+					xyt->at(i).get()));
+				(*n)->positional_angle(positional_angle(
+					xyt->at((*n)->id()).get(), 
+					xyt->at(i).get()));
 			}
 			drp->push_back(drp_record_ptr(curr));
 		}
@@ -50,7 +58,7 @@ namespace drp {
 
 
 	const drp_t* load_xyt(const char* path, size_t num_neighbors) {
-		xyt_struct* xyt = bz_load(path);
+		const xyt_t* xyt = xyt::load(path);
 		const drp_t* ret = convert_xyt(xyt, num_neighbors);
 		delete xyt;
 		return ret;
@@ -96,19 +104,17 @@ namespace drp {
 	}
 
 
-	static float distance(size_t n_id, size_t m_id, const xyt_struct* xyt) {
-		return sqrt(pow((xyt->xcol[n_id] - xyt->xcol[m_id]), 2) + 
-					pow((xyt->ycol[n_id] - xyt->ycol[m_id]), 2));
+	inline static float distance(xyt_row* n, xyt_row* m) {
+		return sqrt(pow((n->x() - m->x()), 2) + pow((n->y() - m->y()), 2));
 	}
 
 
-	static float radial_angle(size_t n_id, size_t m_id, const xyt_struct* xyt) {
-		return xyt->thetacol[n_id] - xyt->thetacol[m_id];
+	inline static float radial_angle(xyt_row* n, xyt_row* m) {
+		return n->theta() - m->theta();
 	}
 
 
-	static float positional_angle(size_t n_id, size_t m_id, const xyt_struct* xyt) {
-		return atan((xyt->ycol[n_id] - xyt->ycol[m_id]) / 
-					(xyt->xcol[n_id] - xyt->xcol[m_id])) - xyt->thetacol[m_id];
+	inline static float positional_angle(xyt_row* n, xyt_row* m) {
+		return atan((n->y() - m->y()) / (n->x() - m->x())) - m->theta();
 	}
 }
