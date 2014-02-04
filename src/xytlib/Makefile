@@ -20,7 +20,7 @@ ifdef
 	@if [ -d $(UNITTEST) ]; then cd unittest; make debug; fi
 endif
 
-$(OUT_DIR)/$(PRJ): $(OBJ) $(OUT_DIR)/bozorth3.so
+$(OUT_DIR)/$(PRJ): $(OBJ)
 	@mkdir -p $(OUT_DIR)
 	$(LD) $(LDFLAGS) $(OBJ) -o $@ $(LIB)
 	@mkdir -p $(OUT_INC_DIR)
@@ -31,7 +31,7 @@ $(OUT_DIR)/$(PRJ): $(OBJ) $(OUT_DIR)/bozorth3.so
 
 clean:
 	$(RM) -rf $(OBJ)
-	$(RM) -rf $(OUT_DIR)
+	$(RM) -rf $(OUT_DIR)/$(PRJ)
 ifdef UNITTEST
 	@if [ -d $(UNITTEST) ]; then cd unittest; make clean; fi
 endif

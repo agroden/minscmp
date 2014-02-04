@@ -1,4 +1,4 @@
-/// drp.h
+/// xyt.h
 ///
 /// Contains functions for reading and creating records for use with minscmp.
 ///
@@ -29,6 +29,7 @@ namespace xyt {
 
 	// file format:
 	// X Y T Q
+	// ...
 	void save(const char* path, const xyt_t* xyt);
 	const xyt_t* load(const char* path);
 }
