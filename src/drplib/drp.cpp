@@ -72,7 +72,7 @@ namespace drp {
 			ofile << (*i)->id() << " ";
 			ofile << (*i)->ridge_direction() << " ";
 			ofile << group->size() << "\n";
-			for (auto j = group->begin(); j != group->end(); ++i) {
+			for (auto j = group->begin(); j != group->end(); ++j) {
 				ofile << (*j)->id() << " ";
 				ofile << (*j)->distance() << " ";
 				ofile << (*j)->radial_angle() << " ";
@@ -115,6 +115,6 @@ namespace drp {
 
 
 	inline static float positional_angle(xyt_row* n, xyt_row* m) {
-		return atan((n->y() - m->y()) / (n->x() - m->x())) - m->theta();
+		return atan2((n->y() - m->y()), (n->x() - m->x())) - m->theta();
 	}
 }
