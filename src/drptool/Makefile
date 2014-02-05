@@ -1,16 +1,15 @@
-# make file for the minsec
+# make file for drptool
 PRJ=drptool
 OUT_DIR=../../bin
 SRC=$(wildcard *.cpp)
 OBJ=$(SRC:.cpp=.o)
 LIB=-ldrp
-INC=-I../../include
+INC=-I$(CURDIR)../../include
 UNITTEST=
 LD=g++
-LIB_DIR=../../lib
-NBIS_LIB=/opt/NBIS/lib
+LIB_DIR=$(CURDIR)/../../lib
 CXXFLAGS=-Wall -std=c++11
-LDFLAGS=-Wl,-rpath=$(LIB_DIR) -L$(LIB_DIR) -L$(NBIS_LIB)
+LDFLAGS=-Wl,-rpath=$(LIB_DIR) -L$(LIB_DIR)
 
 all: $(OUT_DIR)/$(PRJ)
 

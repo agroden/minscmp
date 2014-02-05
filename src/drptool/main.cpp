@@ -40,6 +40,7 @@ int main(int argc, const char* argv[]) {
 					return err_exit("-n flag requires an argument");
 				}
 				n = std::stoi(argv[i + 1]);
+				++i;
 			} else if ("-h" == s) {
 				print_usage();
 				return 0;
