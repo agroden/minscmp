@@ -1,31 +1,28 @@
-# make file for the minsec
-PRJ=minscmp
-OUT_DIR=bin
-SRC=$(wildcard *.cpp)
-OBJ=$(SRC:.cpp=.o)
-UNITTEST=
-LD=g++
-CXXFLAGS=-Wall -std=c++11
-LDFLAGS=
+# main makefile
+BIN=../bin
+LIB=../lib
+INC=../include
+PRJS=xytlib drplib drptool minscmp
 
-all: $(OUT_DIR)/$(PRJ)
+all: $(BIN)/drptool $(BIN)/minscmp
 
-debug: CXXFLAGS += -g3 -DDEBUG
+debug: MAKE += debug
 debug: all
-ifdef
-	@if [ -d $(UNITTEST) ]; then cd unittest; make debug; fi
-endif
 
-$(OUT_DIR)/$(PRJ): $(OBJ)
-	@mkdir -p $(OUT_DIR)
-	$(LD) $(LDFLAGS) $^ -o $@
+$(LIB)/libxyt.so:
+	cd xytlib; $(MAKE)
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $<
+$(LIB)/libdrp.so: $(LIB)/libxyt.so
+	cd drplib; $(MAKE)
+
+$(BIN)/drptool: $(LIB)/libdrp.so
+	cd drptool; $(MAKE)
+
+$(BIN)/minscmp: $(LIB)/libdrp.so
+	cd minscmp; $(MAKE)
 
 clean:
-	$(RM) -rf $(OBJ)
-	$(RM) -rf $(OUT_DIR)
-ifdef UNITTEST
-	@if [ -d $(UNITTEST) ]; then cd unittest; make clean; fi
-endif
+	@$(foreach prj,$(PRJS),cd $(prj); make clean;)
+	$(RM) -rf $(BIN)
+	$(RM) -rf $(LIB)
+	$(RM) -rf $(INC)
