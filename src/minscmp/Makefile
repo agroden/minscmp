@@ -4,7 +4,7 @@ OUT_DIR=../../bin
 SRC=$(wildcard *.cpp)
 OBJ=$(SRC:.cpp=.o)
 LIB=-ldrp
-INC=-I$(CURDIR)../../include
+INC=-I$(CURDIR)/../../include
 UNITTEST=
 LD=g++
 LIB_DIR=$(CURDIR)/../../lib
