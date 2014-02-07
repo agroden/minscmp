@@ -24,7 +24,7 @@ namespace xyt {
 		int m_x, m_y, m_theta, m_quality;
 	};
 
-	typedef std::unique_ptr<xyt_row> xyt_row_ptr;
+	typedef std::shared_ptr<xyt_row> xyt_row_ptr;
 	typedef std::deque<xyt_row_ptr> xyt_t;
 
 	// file format:
