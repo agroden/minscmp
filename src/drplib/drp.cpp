@@ -18,7 +18,7 @@ namespace drp {
 	static float positional_angle(xyt_row* n, xyt_row* m);
 
 
-	const drp_t* convert_xyt(const xyt_t* xyt, size_t num_neighbors) {
+	drp_t* convert_xyt(const xyt_t* xyt, size_t num_neighbors) {
 		drp_t* drp = new drp_t();
 		for (size_t i = 0; i < xyt->size(); ++i) {
 			drp_record* curr = new drp_record(i, xyt->at(i)->theta());
@@ -57,9 +57,9 @@ namespace drp {
 	}
 
 
-	const drp_t* load_xyt(const char* path, size_t num_neighbors) {
+	drp_t* load_xyt(const char* path, size_t num_neighbors) {
 		const xyt_t* xyt = xyt::load(path);
-		const drp_t* ret = convert_xyt(xyt, num_neighbors);
+		drp_t* ret = convert_xyt(xyt, num_neighbors);
 		delete xyt;
 		return ret;
 	}
@@ -76,14 +76,18 @@ namespace drp {
 				ofile << (*j)->id() << " ";
 				ofile << (*j)->distance() << " ";
 				ofile << (*j)->radial_angle() << " ";
-				ofile << (*j)->positional_angle() << "\n";
+				ofile << (*j)->positional_angle();
+				if ((j + 1) != group->end())
+					ofile << '\n';
 			}
+			if ((i + 1) != drp->end())
+				ofile << '\n';
 		}
 		ofile.close();
 	}
 
 
-	const drp_t* load(const char* path) {
+	drp_t* load(const char* path) {
 		std::ifstream ifile(path, std::ifstream::in);
 		drp_t* drp = new drp_t();
 		unsigned int id;
