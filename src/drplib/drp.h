@@ -40,7 +40,7 @@ namespace drp {
 		float m_positional_angle;
 	};
 
-	typedef std::unique_ptr<drp_row> drp_row_ptr;
+	typedef std::shared_ptr<drp_row> drp_row_ptr;
 	typedef std::deque<drp_row_ptr> drp_group_t;
 
 	class drp_record : public minutiae {
@@ -55,18 +55,18 @@ namespace drp {
 		float m_ridge_direction;
 	};
 
-	typedef std::unique_ptr<drp_record> drp_record_ptr;
+	typedef std::shared_ptr<drp_record> drp_record_ptr;
 	typedef std::deque<drp_record_ptr> drp_t;
 
-	const drp_t* convert_xyt(const xyt::xyt_t* xyt, size_t num_neighbors = 6);
-	const drp_t* load_xyt(const char* path, size_t num_neighbors = 6);
+	drp_t* convert_xyt(const xyt::xyt_t* xyt, size_t num_neighbors = 6);
+	drp_t* load_xyt(const char* path, size_t num_neighbors = 6);
 
 	// file format:
 	// minutiae_id ridge_direction number_of_neighbors
 	// minutiae_id distance radial_angle positional_angle
 	// ... (repeats for number_of_neighbors)
 	void save(const char* path, const drp_t* drp);
-	const drp_t* load(const char* path);
+	drp_t* load(const char* path);
 }
 
 #endif
