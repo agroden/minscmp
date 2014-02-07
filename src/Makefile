@@ -2,7 +2,6 @@
 BIN=../bin
 LIB=../lib
 INC=../include
-PRJS=xytlib drplib drptool minscmp
 
 all: $(BIN)/drptool $(BIN)/minscmp
 
@@ -22,7 +21,10 @@ $(BIN)/minscmp: $(LIB)/libdrp.so
 	cd minscmp; $(MAKE)
 
 clean:
-	@$(foreach prj,$(PRJS),cd $(prj); make clean;)
+	@cd xytlib; make clean
+	@cd drplib; make clean
+	@cd drptool; make clean
+	@cd minscmp; make clean
 	$(RM) -rf $(BIN)
 	$(RM) -rf $(LIB)
 	$(RM) -rf $(INC)
