@@ -55,7 +55,7 @@ int main(int argc, const char* argv[]) {
 		return err_exit("incorrect number of arguments");
 	}
 
-	const drp::drp_t* drp = drp::load_xyt(positional_args[0], n);
+	drp::drp_t* drp = drp::load_xyt(positional_args[0], n);
 	drp::save(positional_args[1], drp);
 	return 0;
 }
